@@ -22,5 +22,12 @@ namespace BethanyPieShop.InventoryManagement.Domain.General
         {
             return $"{ItemPrice} {Currency}";
         }
+
+        //public Price(double price, Currency currency)
+        //{
+        //    ItemPrice = price;
+        //    Currency = currency;
+        //} .//now called from program class by object intializer
+
     }
 }

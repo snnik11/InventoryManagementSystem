@@ -9,9 +9,18 @@ namespace BethanyPieShop.InventoryManagement.Domain.ProducManagement
 {
    public partial class Product
     {
-        private void UpdateLowStock()
+        public static int StockThreshhold = 5; //initial value
+
+        public static void ChangeStockThreshhold(int newStockThreshhold)
         {
-            if (AmountInStock < 10)
+            if (newStockThreshhold > 0)
+            {
+                StockThreshhold = newStockThreshhold;
+            }
+        }
+        public void UpdateLowStock()
+        {
+            if (AmountInStock < StockThreshhold)
             {
                 IsBelowStockThreshold = true;
             }
@@ -43,7 +52,7 @@ namespace BethanyPieShop.InventoryManagement.Domain.ProducManagement
                 Log($"{CreateSimpleProductRepresentation} has been stocked extra. {newStock - AmountInStock} items couldnt be stored");
             }
 
-            if (AmountInStock > 10)
+            if (AmountInStock > StockThreshhold)
             {
                 IsBelowStockThreshold = false;
                 //to check UpdateLowStock();
