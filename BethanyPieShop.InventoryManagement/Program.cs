@@ -6,7 +6,7 @@ using BethanyPieShop.InventoryManagement.Domain.ProducManagement;
 
 PrintWelcome();
 
-Utilities.InitializeStock();
+Utilities1.InitializeStock();
 
 //Product.ChangeStockThreshhold(10);
 //Product.StockThreshhold = 10;
@@ -30,7 +30,7 @@ Utilities.InitializeStock();
 
 //Product p3 = new Product(3, "Mask", "HEPA", samplePrice, UnitType.PerItem, 20);
 
-Utilities.ShowMainMenu();
+Utilities1.ShowMainMenu();
 
 Console.WriteLine("Application closing now");
 
