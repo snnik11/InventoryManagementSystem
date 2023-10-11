@@ -1,8 +1,11 @@
 ﻿using BethanyPieShop.InventoryManagement.Domain.General;
+using BethanyPieShop.InventoryManagement.Domain.OrderManagement;
 using BethanyPieShop.InventoryManagement.Domain.ProducManagement;
 using System;
+
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -43,21 +46,23 @@ namespace BethanyPieShop.InventoryManagement
                     break;
 
                 case "2":
+                    ShowOrderManagementMenu();
                     break;
                 case "3":
+                    ShowSettingsMenu();
                     break;
                 case "4":
-                    break;
-                case "5":
-                    break;
-                case "6":
+                    //SaveAllData();
                     break;
 
+                default:
+                    Console.WriteLine("Invalid selection");
+                    break;
             }
         }
-            private static void ShowInventoryManagementMenu()
-            {
-                string? userSelection;
+        private static void ShowInventoryManagementMenu()
+        {
+            string? userSelection;
 
             do
             {
@@ -76,7 +81,7 @@ namespace BethanyPieShop.InventoryManagement
 
                 userSelection = Console.ReadLine();
 
-                switch(userSelection)
+                switch (userSelection)
                 {
                     case "1":
                         ShowDetailsAndUseProduct();
@@ -97,18 +102,18 @@ namespace BethanyPieShop.InventoryManagement
 
             }
             while (userSelection != "0");
-                
-             }
 
-            private static void ShowAllProductsOverview()
-            {   
-                foreach (var product in inventory)
+        }
+
+        private static void ShowAllProductsOverview()
+        {
+            foreach (var product in inventory)
             {
                 Console.WriteLine(product.DisplayDetailsShort());
                 Console.WriteLine();
             }
 
-            }
+        }
         private static void ShowDetailsAndUseProduct()
         {
             string? userSelection = string.Empty;
@@ -145,22 +150,118 @@ namespace BethanyPieShop.InventoryManagement
                 Console.WriteLine("Non existing product selected");
         }
 
-        private static void ShowProductLowOnStock()
-        {
-            List<Product> lowOnStockProducts = inventory.Where(p => p.IsBelowStockThreshold).ToList();
-            if (lowOnStockProducts.Count > 0)
-            {
-                Console.WriteLine("The following items are low on stock, order more soon");
+        //    private static void ShowProductLowOnStock()
+        //    {
+        //        List<Product> lowOnStockProducts = inventory.Where(p => p.IsBelowStockThreshold).ToList();
+        //        if (lowOnStockProducts.Count > 0)
+        //        {
+        //            Console.WriteLine("The following items are low on stock, order more soon");
 
-                foreach (var product in lowOnStockProducts)
+        //            foreach (var product in lowOnStockProducts)
+        //            {
+        //                Console.WriteLine(product.DisplayDetailsShort());
+        //                Console.WriteLine();
+        //            }
+        //        }
+        //        else
+        //            Console.WriteLine("no items are currently in low stock");
+        //    }
+        //    //   Console.ReadLine();
+        //} 
+        private static void ShowOrderManagementMenu()
+        {
+            string? userSelection = string.Empty;
+            do
+            {
+                Console.ResetColor();
+                Console.Clear();
+                Console.WriteLine("********************");
+                Console.WriteLine("* Select an action *");
+                Console.WriteLine("********************");
+
+                Console.WriteLine("1: Open order overview");
+                Console.WriteLine("2: Add new order");
+                Console.WriteLine("0: Back to main menu");
+
+                Console.Write("Your selection: ");
+
+                userSelection = Console.ReadLine();
+
+                switch (userSelection)
                 {
-                    Console.WriteLine(product.DisplayDetailsShort());
+                    case "1":
+                        ShowOpenOrderOverview();
+                        break;
+                    case "2":
+                        ShowAddNewOrder();
+                        break;
+                    default:
+                        Console.WriteLine("Invalid selection. Please try again");
+                        break;
+                }
+
+            } while (userSelection != "0");
+            ShowMainMenu();
+        }
+        private static void ShowOpenOrderOverview()
+        {
+            ShowFulfilledOrders();
+
+            if (orders.Count > 0)
+            {
+                Console.WriteLine("Open orders");
+
+                foreach (var order in orders)
+                {
+                    Console.WriteLine(order.ShowOrderDetails());
                     Console.WriteLine();
                 }
             }
             else
-                Console.WriteLine("no items are currently in low stock");
+            {
+                Console.WriteLine("there are no open orders");
+            }
+
+            Console.ReadLine();
         }
+        private static void ShowFulfilledOrders()
+        {
+            Console.WriteLine("Checking fulfilled orders");
+            foreach (var order in orders)
+            {
+                //fulfill the order
+                if (!order.Fulfilled && order.OrderFulfilmentDate < DateTime.Now)
+                {
+                    foreach (var orderItem in order.OrderItems)
+                    {
+                        Product? selectedProduct = inventory.Where(p => p.Id == orderItem.ProductId).FirstOrDefault();
+                        if (selectedProduct != null)
+                            selectedProduct.IncreaseStock(orderItem.AmountOrdered);
+
+                    }
+                    order.Fulfilled = true;
+                }
+            }
+            orders.RemoveAll(o => o.Fulfilled);
+            Console.WriteLine("Fulfilled orders checked");
         }
+        private static void ShowAddNewOrder()
+        {
+            Order newOrder = new Order();
+            string? selectedProductId = string.Empty;
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("Creating new order");
+            Console.ResetColor();
+
+            do
+            {
+                ShowAllProductsOverview();
+                Console.WriteLine("Which product do you want to order (Enter 0 if you want to stop adding orders");
+
+            }
+        }
+    }  
+
     }
-}
+

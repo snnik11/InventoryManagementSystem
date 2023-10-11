@@ -11,7 +11,7 @@ namespace BethanyPieShop.InventoryManagement
 {
     internal class Utilities1
     {
-        //fields
+        //fields for Utilities1
         private static List<Product> inventory = new();
         private static List<Order> orders = new();
 
