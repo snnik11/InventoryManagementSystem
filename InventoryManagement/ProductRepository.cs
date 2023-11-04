@@ -12,7 +12,7 @@ namespace BethanyPieShop.InventoryManagement
     internal class ProductRepository
     {
         private string directory = @"C:\Nikita\Code\InventoryManagementSystem\";
-        private string productFileName = "product.txt"; 
+        private string productFileName = "product.txt";
 
         //check for file
         private void CheckForFile()
@@ -20,7 +20,7 @@ namespace BethanyPieShop.InventoryManagement
             string path = $"{directory}{productFileName}";
 
             bool existingFileFound = File.Exists(path);
-            if(!existingFileFound)
+            if (!existingFileFound)
             {
                 //Create a new directory
                 if (!Directory.Exists(path))
@@ -55,7 +55,7 @@ namespace BethanyPieShop.InventoryManagement
                     success = int.TryParse(productSplits[3],
                         out int maxItemInStock);
 
-                    if(!success)
+                    if (!success)
                     {
                         maxItemInStock = 100;
                     }
@@ -71,7 +71,7 @@ namespace BethanyPieShop.InventoryManagement
                     success = Enum.TryParse(productSplits[5],
                         out Currency currency);
 
-                   if (!success)
+                    if (!success)
                     {
                         currency = Currency.Dollar;
                     }
@@ -98,7 +98,7 @@ namespace BethanyPieShop.InventoryManagement
                                 Currency = currency
                             }, maxItemInStock, amountPerBox);
                     }
-                     
+
 
 
                 }
