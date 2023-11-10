@@ -2,6 +2,7 @@ using BethanysPieShop.InventoryManagement.Domain.Contracts;
 using BethanysPieShop.InventoryManagement.Domain.General;
 using System.Text;
 
+//fresh products to be stored in cold storage 
 namespace InventoryManagement.Domain.ProductManagement
 {
     public class FreshProduct : Product, ISaveable

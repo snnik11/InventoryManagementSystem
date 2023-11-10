@@ -1,5 +1,6 @@
 using InventoryManagement.Domain.Contracts;
 using InventoryManagement.Domain.General;
+using InventoryManagement.Domain.ProductManagement;
 
 namespace InventoryManagement.Domain.ProductManagement
 {

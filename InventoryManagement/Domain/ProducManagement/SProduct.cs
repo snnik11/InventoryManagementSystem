@@ -12,7 +12,7 @@ namespace InventoryManagement.Domain.ProductManagement
         private string name = string.Empty;
         private string? description; //? for marking it as nullable in case wanna leave it empty
 
-        private int maxItemInStock = 0; //doesnt need to be exposed using properties
+        protected int maxItemInStock = 0; //doesnt need to be exposed using properties
 
         //private UnitType unitType; //defined in properties
         //private int amountInStock = 0; //will keep track of amount of items in stock for the product
@@ -56,6 +56,7 @@ namespace InventoryManagement.Domain.ProductManagement
 
         public UnitType UnitType { get; set;}
 
+        //protected to be accessible to parent-child classes
         public int AmountInStock { get; protected set;} //only exposing for get for regular get read
         public bool IsBelowStockTreshold { get; protected set;}
 
