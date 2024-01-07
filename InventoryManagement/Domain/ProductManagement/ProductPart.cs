@@ -2,7 +2,7 @@ namespace InventoryManagement.Domain.ProductManagement
 {
     public partial class Product
     {
-        public static int StockTreshold = 5;
+        public static int StockThreshold = 5;
 
         public static void ChangeStockThreshold(int newStockThreshold)
         {

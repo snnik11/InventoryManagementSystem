@@ -1,29 +1,36 @@
-﻿using BethanyPieShop.InventoryManagement.Domain.General;
-using BethanyPieShop.InventoryManagement.Domain.OrderManagement;
-using BethanyPieShop.InventoryManagement.Domain.ProducManagement;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using InventoryManagement.Domain.Contracts;
+using InventoryManagement.Domain.General;
+using InventoryManagement.Domain.OrderManagement;
+using InventoryManagement.Domain.ProductManagement;
+using InventoryManagement.Domain.Contracts;
+using InventoryManagement.Domain.General;
+using InventoryManagement.Domain.OrderManagement;
+using InventoryManagement.Domain.ProductManagement;
+using InventoryManagement;
 
-namespace BethanyPieShop.InventoryManagement
+namespace InventoryManagement
 {
-    internal class Utilities1
+    internal class Utilities
     {
-        //fields for Utilities1
         private static List<Product> inventory = new();
         private static List<Order> orders = new();
 
-        //methods
         internal static void InitializeStock()//Mock implementation
         {
-            Product p1 = new Product(1, "Sugar", "Lorem ipsum", new Price() { ItemPrice = 10, Currency = Currency.Euro }, UnitType.PerKg, 100);
-            Product p2 = new Product(2, "Cake decorations", "Lorem ipsum", new Price() { ItemPrice = 8, Currency = Currency.Euro }, UnitType.PerItem, 20);
-            Product p3 = new Product(3, "Strawberry", "Lorem ipsum", new Price() { ItemPrice = 3, Currency = Currency.Euro }, UnitType.PerBox, 10);
-            inventory.Add(p1);
-            inventory.Add(p2);
-            inventory.Add(p3);
+            //inventory.Add(new Product(1, "Sugar", "Lorem ipsum", new Price() { ItemPrice = 10, Currency = Currency.Euro }, UnitType.PerKg, 100));
+            //inventory.Add(new Product(2, "Cake decorations", "Lorem ipsum", new Price() { ItemPrice = 8, Currency = Currency.Euro }, UnitType.PerItem, 20));
+            //inventory.Add(new Product(3, "Strawberry", "Lorem ipsum", new Price() { ItemPrice = 3, Currency = Currency.Euro }, UnitType.PerBox, 10));
+
+            ProductRepository productRepository = new();
+            inventory = productRepository.LoadProductsFromFile();
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"Loaded {inventory.Count} products!");
+
+            Console.WriteLine("Press enter to continue!");
+            Console.ResetColor();
+
+            Console.ReadLine();
         }
 
         internal static void ShowMainMenu()
@@ -55,7 +62,7 @@ namespace BethanyPieShop.InventoryManagement
                     ShowSettingsMenu();
                     break;
                 case "4":
-                    //SaveAllData();
+                    SaveAllData();
                     break;
                 case "0":
                     break;
@@ -63,6 +70,23 @@ namespace BethanyPieShop.InventoryManagement
                     Console.WriteLine("Invalid selection. Please try again.");
                     break;
             }
+        }
+
+        private static void SaveAllData()
+        {
+            ProductRepository productRepository = new();
+
+            List<ISaveable> saveables = new List<ISaveable>();
+
+            foreach (var item in inventory)//now a list of Products
+            {
+                saveables.Add(item as ISaveable);
+            }
+
+            productRepository.SaveToFile(saveables);
+
+            Console.ReadLine();
+            ShowMainMenu();
         }
 
         private static void ShowInventoryManagementMenu()
@@ -100,11 +124,11 @@ namespace BethanyPieShop.InventoryManagement
                         break;
 
                     case "2":
-                        //ShowCreateNewProduct();
+                        ShowCreateNewProduct();
                         break;
 
                     case "3":
-                        //ShowCloneExistingProduct();
+                        ShowCloneExistingProduct();
                         break;
 
                     case "4":
@@ -120,6 +144,38 @@ namespace BethanyPieShop.InventoryManagement
             ShowMainMenu();
         }
 
+        private static void ShowCloneExistingProduct()
+        {
+            string? userSelection = string.Empty;
+            string? newId = string.Empty;
+
+            Console.Write("Enter the ID of product to clone: ");
+            string? selectedProductId = Console.ReadLine();
+
+            if (selectedProductId != null)
+            {
+                Product? selectedProduct = inventory.Where(p => p.Id == int.Parse(selectedProductId)).FirstOrDefault();
+
+                if (selectedProduct != null)
+                {
+                    Console.Write("Enter the new ID of the cloned product: ");
+
+                    newId = Console.ReadLine();
+
+                    Product? p = selectedProduct.Clone() as Product;
+
+                    if (p != null)
+                    {
+                        p.Id = int.Parse(newId);
+                        inventory.Add(p);
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Non-existing product selected. Please try again.");
+            }
+        }
 
         private static void ShowAllProductsOverview()
         {
@@ -170,9 +226,116 @@ namespace BethanyPieShop.InventoryManagement
             }
         }
 
+        private static void ShowCreateNewProduct()
+        {
+            UnitType unitType = UnitType.PerItem;//default
+
+            Console.WriteLine("What type of product do you want to create?");
+            Console.WriteLine("1. Regular product\n2. Bulk product\n3. Fresh product\n4. Boxed product");
+            Console.Write("Your selection: ");
+
+            var productType = Console.ReadLine();
+            if (productType != "1" && productType != "2" && productType != "3"
+                && productType != "4")
+            {
+                Console.WriteLine("Invalid selection!");
+                return;
+            }
+
+            Product? newProduct = null;
+
+            Console.Write("Enter the name of the product: ");
+            string name = Console.ReadLine() ?? string.Empty;
+
+            Console.Write("Enter the price of the product: ");
+            double price = double.Parse(Console.ReadLine() ?? "0.0");
+
+            ShowAllCurrencies();
+            Console.Write("Select the currency: ");
+            Currency currency = (Currency)Enum.Parse(typeof(Currency), Console.ReadLine() ?? "1");
+
+            Console.Write("Enter the description of the product: ");
+            string description = Console.ReadLine() ?? string.Empty;
+
+
+            if (productType == "1")
+            {
+                ShowAllUnitTypes();
+                Console.Write("Select the unit type: ");
+                unitType = (UnitType)Enum.Parse(typeof(UnitType), Console.ReadLine() ?? "1");
+            }
+
+            Console.Write("Enter the maximum number of items in stock for this product: ");
+            int maxInStock = int.Parse(Console.ReadLine() ?? "0");
+
+            int newId = inventory.Max(p => p.Id) + 1;//find highest id and increase with 1
+
+            switch (productType)
+            {
+                case "1":
+                    newProduct = new RegularProduct(newId, name, description, new Price() { ItemPrice = price, Currency = currency }, unitType, maxInStock);
+                    break;
+
+                case "2":
+                    newProduct = new BulkProduct(newId++, name, description, new Price() { ItemPrice = price, Currency = currency }, maxInStock);
+                    break;
+
+                case "3":
+                    Console.Write("Enter the number storage instructions: ");
+                    string storageInstructions = Console.ReadLine() ?? string.Empty;
+
+                    Console.Write("Enter the expiry date: ");
+                    DateTime expiryDate = DateTime.Parse(Console.ReadLine() ?? string.Empty);
+
+                    newProduct = new FreshProduct(newId++, name, description, new Price() { ItemPrice = price, Currency = currency }, unitType, maxInStock);
+
+                    FreshProduct? fp = newProduct as FreshProduct;
+                    fp.StorageInstructions = storageInstructions;
+                    fp.ExpiryDateTime = expiryDate;
+
+                    if (newProduct != null)
+                        inventory.Add(fp);
+
+                    //fix so that we don't add it again
+                    newProduct = null;
+
+                    break;
+
+                case "4":
+                    Console.Write("Enter the number of items per box: ");
+                    int numberInBox = int.Parse(Console.ReadLine() ?? "0");
+
+                    newProduct = new BoxedProduct(newId++, name, description, new Price() { ItemPrice = price, Currency = currency }, maxInStock, numberInBox);
+                    break;
+            }
+
+            if (newProduct != null)
+                inventory.Add(newProduct);
+        }
+
+        private static void ShowAllUnitTypes()
+        {
+            int i = 1;
+            foreach (string name in Enum.GetNames(typeof(UnitType)))
+            {
+                Console.WriteLine($"{i}. {name}");
+                i++;
+            }
+        }
+
+        private static void ShowAllCurrencies()
+        {
+            int i = 1;
+            foreach (string name in Enum.GetNames(typeof(Currency)))
+            {
+                Console.WriteLine($"{i}. {name}");
+                i++;
+            }
+        }
+
         private static void ShowProductsLowOnStock()
         {
-            List<Product> lowOnStockProducts = inventory.Where(p => p.IsBelowStockThreshold).ToList();
+            List<Product> lowOnStockProducts = inventory.Where(p => p.IsBelowStockTreshold).ToList();
 
             if (lowOnStockProducts.Count > 0)
             {
@@ -343,7 +506,7 @@ namespace BethanyPieShop.InventoryManagement
                 Console.WriteLine("What do you want to do?");
                 Console.ResetColor();
 
-                Console.WriteLine("1: Change stock threshold");
+                Console.WriteLine("1: Change stock treshold");
                 Console.WriteLine("0: Back to main menu");
 
                 Console.Write("Your selection: ");
@@ -353,7 +516,7 @@ namespace BethanyPieShop.InventoryManagement
                 switch (userSelection)
                 {
                     case "1":
-                        ShowChangeStockThreshold();
+                        ShowChangeStockTreshold();
                         break;
 
                     default:
@@ -365,13 +528,13 @@ namespace BethanyPieShop.InventoryManagement
             ShowMainMenu();
         }
 
-        private static void ShowChangeStockThreshold()
+        private static void ShowChangeStockTreshold()
         {
-            Console.WriteLine($"Enter the new stock threshold (current value: {Product.StockThreshhold}). This applies to all products!");
+            Console.WriteLine($"Enter the new stock treshold (current value: {Product.StockThreshold}). This applies to all products!");
             Console.Write("New value: ");
             int newValue = int.Parse(Console.ReadLine() ?? "0");
-            Product.StockThreshhold = newValue;
-            Console.WriteLine($"New stock threshold set to {Product.StockThreshhold}");
+            Product.StockThreshold = newValue;
+            Console.WriteLine($"New stock treshold set to {Product.StockThreshold}");
 
             foreach (var product in inventory)
             {
@@ -380,6 +543,6 @@ namespace BethanyPieShop.InventoryManagement
 
             Console.ReadLine();
         }
-    }
 
+    }
 }

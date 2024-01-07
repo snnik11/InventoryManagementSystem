@@ -1,12 +1,12 @@
-﻿// See https://aka.ms/new-console-template for more information
-using BethanyPieShop.InventoryManagement;
-using BethanyPieShop.InventoryManagement.Domain.General;
-using BethanyPieShop.InventoryManagement.Domain.ProducManagement;
+﻿
+using InventoryManagement;
+using InventoryManagement.Domain.General;
+using InventoryManagement.Domain.ProductManagement;
 
 
 PrintWelcome();
 
-Utilities1.InitializeStock();
+Utilities.InitializeStock();
 
 //Product.ChangeStockThreshhold(10);
 //Product.StockThreshhold = 10;
@@ -30,7 +30,7 @@ Utilities1.InitializeStock();
 
 //Product p3 = new Product(3, "Mask", "HEPA", samplePrice, UnitType.PerItem, 20);
 
-Utilities1.ShowMainMenu();
+Utilities.ShowMainMenu();
 
 Console.WriteLine("Application closing now");
 

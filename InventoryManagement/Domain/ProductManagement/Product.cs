@@ -1,5 +1,6 @@
 using InventoryManagement.Domain.Contracts;
 using InventoryManagement.Domain.General;
+using System.Text;
 
 namespace InventoryManagement.Domain.ProductManagement
 {
@@ -12,7 +13,7 @@ namespace InventoryManagement.Domain.ProductManagement
         private string name = string.Empty;
         private string? description; //? for marking it as nullable in case wanna leave it empty
 
-        protected int maxItemInStock = 0; //doesnt need to be exposed using properties
+        protected int maxItemsInStock = 0; //doesnt need to be exposed using properties
 
         //private UnitType unitType; //defined in properties
         //private int amountInStock = 0; //will keep track of amount of items in stock for the product
@@ -52,7 +53,7 @@ namespace InventoryManagement.Domain.ProductManagement
             }
            
         }
-        public Price price { get; set;}
+        public Price Price { get; set;}
 
         public UnitType UnitType { get; set;}
 
@@ -84,7 +85,7 @@ namespace InventoryManagement.Domain.ProductManagement
             UnitType = unitType;
             maxItemsInStock = maxAmountInStock;
 
-            if ( AmountInStock < StockTreshold) 
+            if ( AmountInStock < StockThreshold) 
             {
                 IsBelowStockTreshold = true;
             }
@@ -94,7 +95,7 @@ namespace InventoryManagement.Domain.ProductManagement
         //called to Update BelowStockThreshold to true
         public void UpdateLowStock()
         {
-            if (AmountInStock < StockTreshold)
+            if (AmountInStock < StockThreshold)
             {
                 IsBelowStockTreshold = true;
             }
@@ -110,7 +111,7 @@ namespace InventoryManagement.Domain.ProductManagement
                 AmountInStock -= items;
 
                 UpdateLowStock();
-                Log ($"Amount in stock updated. Now there are {AmountInStock} items left in the stock");
+               Console.WriteLine ($"Amount in stock updated. Now there are {AmountInStock} items left in the stock");
             }
         }
 
@@ -129,10 +130,10 @@ namespace InventoryManagement.Domain.ProductManagement
             else 
             {
                 //we store only the max number of items not overstocked ones
-                AmountInStock = maxAmountInStock;
-                Log($"{CreateSimpleProductRepresentation} stock overflow. {newStock - AmountInStock} items couldn't be stored");
+                AmountInStock = maxItemsInStock;
+                Console.WriteLine($"{CreateSimpleProductRepresentation} stock overflow. {newStock - AmountInStock} items couldn't be stored");
             }
-            if (AmountInStock > StockTreshold)
+            if (AmountInStock > StockThreshold)
             {
                 IsBelowStockTreshold = false;
             }
@@ -150,7 +151,7 @@ namespace InventoryManagement.Domain.ProductManagement
             {
                 AmountInStock = 0;
             }
-            Log(reason);
+            Console.WriteLine(reason);
         }
 
         public virtual string DisplayDetailsShort()
@@ -160,7 +161,7 @@ namespace InventoryManagement.Domain.ProductManagement
 
         public virtual string DisplayDetailsFull()
         {
-            StringBuilder sb= new StringBuilder; //dynamically expands memory in heap to fit in modified string
+            StringBuilder sb= new StringBuilder(); //dynamically expands memory in heap to fit in modified string
 
             sb.Append($"{Id} {Name} \n{Description} \n{Price} \n{AmountInStock} items in stock");
 

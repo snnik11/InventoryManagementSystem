@@ -1,5 +1,5 @@
-using BethanysPieShop.InventoryManagement.Domain.Contracts;
-using BethanysPieShop.InventoryManagement.Domain.General;
+using InventoryManagement.Domain.Contracts;
+using InventoryManagement.Domain.General;
 
 namespace InventoryManagement.Domain.ProductManagement
 {

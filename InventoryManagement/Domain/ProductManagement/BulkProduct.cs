@@ -3,7 +3,7 @@ using InventoryManagement.Domain.General;
 
 namespace InventoryManagement.Domain.ProductManagement
 {
-    public class BulkProduct : Product , ISaveable
+    public class BulkProduct : Product, ISaveable
     {
         public BulkProduct(int id, string name, string? description, Price price, int maxAmountInStock):
         base(id,name,description,price, UnitType.PerKg, maxAmountInStock)
@@ -11,9 +11,9 @@ namespace InventoryManagement.Domain.ProductManagement
 
         }
 
-        public string ConverToStringForSaving()
+        public string ConvertToStringForSaving()
         {
-            return $"{Id}; {Name}; {Description}; {maxItemsInStock}; {Price.ItemPrice};{(int)Price.Currency};{(int)UnitType; {3};}";
+            return $"{Id}; {Name}; {Description}; {maxItemsInStock}; {Price.ItemPrice}; {(int)Price.Currency}; {(int)UnitType}; {1};";
         }
 
         public override void IncreaseStock()

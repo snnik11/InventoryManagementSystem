@@ -1,4 +1,5 @@
-﻿using InventoryManagement.Domain.General;
+﻿using InventoryManagement.Domain.Contracts;
+using InventoryManagement.Domain.General;
 using InventoryManagement.Domain.ProductManagement;
 using System;
 using System.Collections.Generic;
@@ -55,11 +56,11 @@ namespace InventoryManagement
                    string description = productSplits[2];
 
                    success = int.TryParse(productSplits[3],
-                       out int maxItemInStock);
+                       out int maxItemsInStock);
 
                    if (!success)
                    {
-                       maxItemInStock = 100;
+                       maxItemsInStock = 100;
                    }
 
                    success = int.TryParse(productSplits[4],
@@ -99,32 +100,30 @@ namespace InventoryManagement
                                ItemPrice = itemPrice,
                                Currency = currency
                            }, 
-                           maxItemInStock, amountPerBox);
+                           maxItemsInStock, amountPerBox);
                            break;
 
                            case "2":
-                           product = new FreshProduct(productId, name,description,
-                           new Price() {ItemPrice =itemPrice, Currency= currency},
-                           maxItemInStock, amountPerBox);
-                           break;
-
+                            product = new FreshProduct(productId, name, description, new Price() { ItemPrice = itemPrice, Currency = currency }, unitType, maxItemsInStock);
+                            break;
+                            
                            case "3":
-                            product = new BulkProduct(productId, name, description,
-                            new Price() {ItemPrice = itemPrice, Currency = currency},
-                            maxItemInStock, amountPerBox);
+                            product = new BulkProduct(productId, name, description, new Price() { ItemPrice = itemPrice, Currency = currency }, maxItemsInStock);
+                            break;
 
                             case "4":
                             product = new RegularProduct(productId, name, description,
-                            new Price() {ItemPrice = itemPrice, Currency = currency},
-                            maxItemInStock, amountPerBox);
+                            new Price() {ItemPrice = itemPrice, Currency = currency}, unitType,
+                            maxItemsInStock);
+                            break;
                    }
                    
-                   product.Add(product);
+                   products.Add(product);
 
                }
            }
 
-           catch (IndecOutOfRangeException iex)
+           catch (IndexOutOfRangeException iex)
            {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Something went wrong while parsing the file. Please check the file again");
@@ -144,7 +143,7 @@ namespace InventoryManagement
            }
            finally 
            {
-                Console.ReserColor();
+                Console.ResetColor();
            }
            return products;
        }
@@ -159,11 +158,11 @@ namespace InventoryManagement
             sb.Append(item.ConvertToStringForSaving());
             sb.Append(Environment.NewLine);
          }
-         File.WriteAllText(path, sb.ToString);
+         File.WriteAllText(path, sb.ToString());
 
          Console.ForegroundColor = ConsoleColor.Green;
          Console.WriteLine("Saved items successfully");
-         Console.ReserColor();
+         Console.ResetColor();
        }
 
    }

@@ -1,5 +1,5 @@
-using BethanysPieShop.InventoryManagement.Domain.Contracts;
-using BethanysPieShop.InventoryManagement.Domain.General;
+using InventoryManagement.Domain.Contracts;
+using InventoryManagement.Domain.General;
 using System.Text;
 
 //fresh products to be stored in cold storage 
@@ -15,11 +15,15 @@ namespace InventoryManagement.Domain.ProductManagement
         {
 
         }
-
-        protected override double GetProductStockValue()
-        {
-          return Price.ItemPrice * AmountInStock;
-        }
+        
+        //protected override double GetProductStockValue()
+        //{
+        //    //if (DateTime.Now > ExpiryDateTime)
+        //    //{
+        //    //    return Price.ItemPrice * AmountInStock * 0.8; //for expired products
+        //    //}
+        //    return Price.ItemPrice * AmountInStock;
+        //}
 
         public override string DisplayDetailsFull()
         {
